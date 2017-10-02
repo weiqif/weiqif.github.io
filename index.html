@@ -1,4 +1,72 @@
 <html> 
+<head>
+	<title>My Amazing HIT</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="mturk.js"></script>
+    <script>
+    	var numclicks = 0;
+    	var keydowns = 0;
+
+      var addedelements = [];
+
+    	$(document).ready(function() {
+    		$("#theimage").click(function(e) {
+          numclicks++;
+          $("#numberofpeople").text(numclicks);
+          $("#numberofpeoplefield").val(numclicks);
+
+          var newdomelement = $("<div class='marker'></div>");
+          newdomelement.css("left", (e.pageX-3) + "px");
+          newdomelement.css("top", (e.pageY-3) + "px");
+
+          var currhistory = $("#history").val();
+          currhistory += "|" + e.pageX + "," + e.pageY + "|";
+          $("#history").val(currhistory);
+
+          newdomelement.click(removeElementEvent);
+
+          $("body").append(newdomelement);
+
+          // add to history
+          addedelements.push(newdomelement);
+    		})
+    		$(document).keydown(function(e) {
+    			keydowns++;
+    			$("#numkeydowns").val(keydowns);
+
+          console.log(e);
+
+          if(e.key=="z" && e.ctrlKey) {
+            var elem2remove = addedelements.pop();
+            removeElement(elem2remove);
+          }
+    		})
+    	})
+
+      function removeElement(elem) {
+        $(elem).remove();
+
+        numclicks--;
+        $("#numberofpeople").text(numclicks);
+        $("#numberofpeoplefield").val(numclicks);       
+      }
+
+      function removeElementEvent(e) {
+        removeElement(this);
+      }
+    </script>
+  <style>
+    .marker {
+      border: 2px solid red;
+      border-radius: 5px;
+      width: 2px;
+      height: 2px;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+    }
+  </style>
+</head>
 <body>
 <h2>Welcome to do an interesting task!</h2> 
 <h3>Greetings from Weiqi Fang</h3>
@@ -6,16 +74,8 @@
 <img src="/images/pikachu.png" width="75" height="75"/>
 </p>
 <h3>Please follow the instructions:</h3>
-<form>
-<fieldset>
-<legend>Please select your age range:</legend>
-            <input type="radio" name="age" value="below 18" checked>below 18<br>
-            <input type="radio" name="age" value="18 to 30">18 to 30<br>
-	    <input type="radio" name="age" value="30 to 40">30 to 40<br>
-	    <input type="radio" name="age" value="40 to 55">40 to 55<br>
-            <input type="radio" name="age" value="above 55">above 55<br>
-</fieldset>
 <br>
+<form id="mturk_form">
 <fieldset>
 <legend>How many recognizable people are in each image?</legend>
 <p>
@@ -60,6 +120,20 @@
 6.Number of recognizable people
 <input type = "text" name = "number of people in image">
 <br><br>
+<img id="theimage" src="https://lh4.googleusercontent.com/RrlsYOqwv_90Avm-U5D_qMf8aPKuORL291fD8Xlw3FArL-GZ9ijeMR65tZfEwqRF9OSHs5r0szGki8hX8ahCeB0cTcI0r0QUSZyPrtE18wn_3WMYgi3UlbRycRIFtO7SwrNBruA">
+
+<p>
+You've selected <span id="numberofpeople">0</span> people.
+</p>
+
+<p>
+  <input id="numclickfield" type="hidden" name="numclicks">
+  <input id="numkeydowns" type="hidden" name="keydowns">
+  <input id="numberofpeoplefield" type="hidden" name="numberofpeople">
+  <input id="history" type="hidden" name="history">
+  <input type="submit" name="Submit Joke">
+</p >
+
 <input type="submit" value="Submit">
 </fieldset>
 </form>
