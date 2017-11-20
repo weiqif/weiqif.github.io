@@ -1,0 +1,5 @@
+URL: https://weiqif.github.io/
+Instructions:
+1. Use left and right arrow keys to control the box in the bottom line avoid hitting dropping boxes.
+2. Buff key "1": You can be invulnerable for 3 seconds as you press key bottom "1".
+3. Buff key "2": You can freeze dropping boxes for 3 seconds as you press key bottom "2". 
