@@ -2,13 +2,13 @@
 <head>
 <title>Avoid Block Game</title>
 <p>
-<strong>Instructions: </strong><font color = blue>Use Left and Right Arrow Keys to control the purple block and try to avoid the dropping blue bocks. Have Fun!</font>
+<strong>Instructions: </strong><font color = blue>Use Left and Right Arrow Keys to control the purple block and try to avoid the dropping blue bocks. Have Fun!<br> Buff Mode: key "1" and key "2", figure out the function by yourself</font>
 </p>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="mturk.js"></script>
 <script>
 var piecex = 0;
-var piecey = 400;
+var piecey = 450;
 var piecex1 = 0;
 var piecey1 = 0;
 var piecex2 = 150;
@@ -20,6 +20,9 @@ var mask = false;
 var time1;
 var oDiv;
 var money;
+var buff1begin;
+var buff2begin;
+var gg = 1;
 function notcollision(piecex,piecex1,piecex2,piecex3,piecey,piecey1,piecey2,piecey3){
    if(mask == true){
     return true;
@@ -54,6 +57,19 @@ $(document).ready(function() {
       // right arrow clicked
       piecex += 25;
     }
+    else if(e.keyCode == 49){
+      mask = true;
+      buff1begin = new Date();
+      $(".piece").css("background-color", 'yellow');
+      console.log(buff1begin+"buffbegin");
+    }
+    else if(e.keyCode == 50){
+      buff2begin = new Date();
+      gg = 0;
+      $(".piece1").css("background-color", 'silver');
+      $(".piece2").css("background-color", 'silver');
+      $(".piece3").css("background-color", 'silver');
+    }
     if(piecex > 250){
       piecex = 0;
     }
@@ -64,28 +80,26 @@ $(document).ready(function() {
   });
   var si = setInterval(function() {
     var end = new Date();
+ //   console.log(end+"end");
     var time = end - begin;
-    piecey1 += 1 + Math.floor(Math.random()*8);
+    piecey1 += (1 + Math.floor(Math.random()*8)) * gg;
     var g = 2 + time / 1000;
     if(g < 8){
-      piecey2 += g;
+      piecey2 += (g * gg);
     }
     else{
-      piecey2 += 8;
+      piecey2 += (8 * gg);
     }
-    piecey3 += 5;
-    if(piecey1 > 400){
+    piecey3 += (5 * gg);
+    if(piecey1 > 450){
       piecey1 = 0;
       piecex1 = Math.floor(Math.random()*250); 
     }
-    if(piecey3 == 120){
-      piecex3 = Math.floor(Math.random()*250);
-    }
-    if(piecey2 > 400){
+    if(piecey2 > 450){
       piecey2 = 0;
       piecex2 = Math.floor(Math.random()*250); 
     }
-    if(piecey3 > 400){
+    if(piecey3 > 450){
       piecey3 = 0;
       piecex3 = Math.floor(Math.random()*250); 
     }
@@ -101,11 +115,30 @@ $(document).ready(function() {
     }
     time1 = (3600*end.getHours())+(60*end.getMinutes())+end.getSeconds() - begin.getSeconds()-(begin.getMinutes()*60)-(3600*begin.getHours());
     money = (time1 * 0.01).toFixed(2);
+    document.all.show.innerHTML = "Time Duration: "+time1+"s"+"  "+"$"+money+"  earned";
     if(money >= 2){
       clearInterval(si);
       alert("Well Down! Your've Earned $2");
     }
-    document.all.show.innerHTML = "Time Duration: "+time1+"s"+"  "+"$"+money+"  earned";
+    if(mask==true){
+    	var duration1 = end.getSeconds() - buff1begin.getSeconds();
+        if(duration1 > 3){
+      		mask = false;
+      		console.log(mask+"mask");
+      		$(".piece").css("background-color", '#AAF');
+    	}
+    }
+    if(gg==0){
+    	var duration2 = end.getSeconds() - buff2begin.getSeconds();
+    	if(duration2 > 3){
+      		gg = 1;
+      		$(".piece1").css("background-color", 'blue');
+      		$(".piece2").css("background-color", 'blue');
+      		$(".piece3").css("background-color", 'blue');
+    	}
+    }
+    // console.log(duration2+"duration");
+
   }, 20);
 })
 
@@ -114,7 +147,7 @@ $(document).ready(function() {
 #gameboard {
   background-color: gray;
   width: 300px;
-  height: 450px;
+  height: 500px;
   position: relative;
 }
 .piece {
@@ -123,7 +156,7 @@ $(document).ready(function() {
   height: 50px;
   position: absolute;
   left: 0px;
-  top: 400px;
+  top: 450px;
 }
 .piece1 {
   background-color: blue;
