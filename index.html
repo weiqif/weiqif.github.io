@@ -7,8 +7,10 @@
 </p>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script>
+var initial_id = 0;
 var loop_id = 0;
 var is_active = false;
+var begin = new Date();
 var p1;
 var p2;
 var p3;
@@ -112,7 +114,8 @@ var playnum = 0;
                SUM5 += JSON.parse(allinputs[i]["data"]).pos5;
                SUM6 += JSON.parse(allinputs[i]["data"]).pos6;
                playnum++;           
-            }                                    
+            }     
+            console.log("PLAYnum: "+playnum);                                
          }
       })     
      .fail(function(jqxhr, textStatus, error) {
@@ -137,7 +140,7 @@ var playnum = 0;
           data: {key: "weiqi", data: JSON.stringify(tmpOBJ)},
       })
      .done(function(data) {
-         console.log(data);
+//         console.log(data);
          var allinputs = data["results"];
          var num = data["count"]; 
          SUM1 = 0;
@@ -201,7 +204,7 @@ var playnum = 0;
       }     
     }
     if(piece6y==250){
-      if((P4==0) || (P4==100) || (P4==200)){
+      if((P6==0) || (P6==100) || (P6==200)){
         return false;
       }       
     }
@@ -212,11 +215,11 @@ $(document).ready(function(){
   var gameboard = $("<div id='gameboard'></div>");
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
-  var Piece = $("<div class='piece'></div>");  
+  var Piece = $("<div class='Piece'></div>");  
   $(gameboard).append(piece);
   $(gameboard).append(Piece);
-  piece.css("background-color", "purple");
-  Piece.css("background-color", "red");
+  piece.css('background-image', 'url(' + 'spaceship.png' + ')');
+  Piece.css('background-image', 'url(' + 'rocket.png' + ')');
   var piece11 = $("<div class='piece1'></div>");
   var piece13 = $("<div class='piece1'></div>");
   var piece21 = $("<div class='piece2'></div>");
@@ -275,7 +278,109 @@ $(document).ready(function(){
     });   
 
   var si = setInterval(function() {
+    var end = new Date();
     isoutofbound();
+      if(loop_id >= 10){
+        is_active = true;
+      }
+      if(loop_id >= 6){
+        updateboard0();
+              console.log("playnum: " + playnum);
+      }
+      // console.log("playnum: " + playnum);
+
+      if(loop_id<=5){
+        P1 = piecex;
+        P2 = piecex;
+        P3 = piecex;
+        P4 = piecex;
+        P5 = piecex;
+        P6 = piecex;
+      Piece.css("left",piecex + "px");
+    }
+    else {
+      if(playnum==0){
+          if(piece1y==250){
+            P1 = piecex;
+            Piece.css("left", P1 + "px");
+          }
+          if(piece2y==250){
+            P2 = piecex;
+            Piece.css("left", P2 + "px");
+          }
+          if(piece3y==250){
+            P3 = piecex;
+            Piece.css("left", P3 + "px");
+          }
+          if(piece4y==250){
+            P4 = piecex;
+            Piece.css("left", P4 + "px");
+          }
+          if(piece5y==250){
+            P5 = piecex;
+            Piece.css("left", P5 + "px");
+          }
+          if(piece6y==250){
+            P6 = piecex;
+            Piece.css("left", P6 + "px");
+          }       
+      }
+      else{
+          if(piece1y==250){
+            P1 = Math.round(Math.round((SUM1 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P1 + "px");         
+          }
+          if(piece2y==250){
+            P2 = Math.round(Math.round((SUM2 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P2 + "px");         
+          }
+          if(piece3y==250){
+            P3 = Math.round(Math.round((SUM3 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P3 + "px");         
+          }
+          if(piece4y==250){
+            P4 = Math.round(Math.round((SUM4 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P4 + "px");         
+          }
+          if(piece5y==250){
+            P5 = Math.round(Math.round((SUM5 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P5 + "px");         
+          }
+          if(piece6y==250){
+            P6 = Math.round(Math.round((SUM6 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P6 + "px");         
+          }       
+      }   
+    } 
+
+    if(notcollision() == false){
+        updateboard0();
+        is_active = false;
+        clearInterval(si);
+        alert("Game Over!");
+      }
+    if(piece1y==250){
+        p1 = piecex;
+      }
+      if(piece2y==250){
+        p2 = piecex;
+      }     
+      if(piece3y==250){
+        p3 = piecex;
+      }
+      if(piece4y==250){
+        p4 = piecex;
+      }
+      if(piece5y==250){
+        p5 = piecex;
+      }
+      if(piece6y==250){
+        p6 = piecex;
+      }
+      if(loop_id >= 11){
+        updateboard();
+      }     
+
     piece1y += 50;
     piece2y += 50;
     piece3y += 50;
@@ -309,7 +414,79 @@ $(document).ready(function(){
       $(".piece4").css("top", piece4y + "px");
       $(".piece5").css("top", piece5y + "px");
       $(".piece6").css("top", piece6y + "px");
-      if(piece1y==250){
+      if(loop_id > 10){
+        is_active = true;
+      }
+      if(loop_id >= 5){
+        updateboard0();
+              console.log("playnum: " + playnum);
+      }
+      // console.log("playnum: " + playnum);
+      if(loop_id<=4){
+        P1 = piecex;
+        P2 = piecex;
+        P3 = piecex;
+        P4 = piecex;
+        P5 = piecex;
+        P6 = piecex;
+      Piece.css("left",piecex + "px");
+    }
+    else {
+      if(playnum==0){
+          if(piece1y==250){
+            P1 = piecex;
+            Piece.css("left", P1 + "px");
+          }
+          if(piece2y==250){
+            P2 = piecex;
+            Piece.css("left", P2 + "px");
+          }
+          if(piece3y==250){
+            P3 = piecex;
+            Piece.css("left", P3 + "px");
+          }
+          if(piece4y==250){
+            P4 = piecex;
+            Piece.css("left", P4 + "px");
+          }
+          if(piece5y==250){
+            P5 = piecex;
+            Piece.css("left", P5 + "px");
+          }
+          if(piece6y==250){
+            P6 = piecex;
+            Piece.css("left", P6 + "px");
+          }       
+      }
+      else{
+          if(piece1y==250){
+            P1 = Math.round(Math.round((SUM1 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P1 + "px");         
+          }
+          if(piece2y==250){
+            P2 = Math.round(Math.round((SUM2 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P2 + "px");         
+          }
+          if(piece3y==250){
+            P3 = Math.round(Math.round((SUM3 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P3 + "px");         
+          }
+          if(piece4y==250){
+            P4 = Math.round(Math.round((SUM4 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P4 + "px");         
+          }
+          if(piece5y==250){
+            P5 = Math.round(Math.round((SUM5 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P5 + "px");         
+          }
+          if(piece6y==250){
+            P6 = Math.round(Math.round((SUM6 + piecex) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P6 + "px");         
+          }       
+      }   
+    }
+
+    if(piece1y==250){
         p1 = piecex;
       }
       if(piece2y==250){
@@ -327,107 +504,20 @@ $(document).ready(function(){
       if(piece6y==250){
         p6 = piecex;
       }
-      if(loop_id >= 10){
-        is_active = true;
-      }
-      if((loop_id >= 5) && (loop_id < 10)){
+      if(notcollision() == false){
         updateboard0();
+        is_active = false;
+        clearInterval(si);
+        alert("Game Over!");
       }
       if(loop_id >= 10){
         updateboard();
       }
-
-      if(loop_id<=4){
-        P1 = piecex;
-        P2 = piecex;
-        P3 = piecex;
-        P4 = piecex;
-        P5 = piecex;
-        P6 = piecex;
-      Piece.css("left",piecex + "px");
-    }
-    else if(loop_id<10){
-      console.log("playnum: " + playnum);
-      if(playnum==0){
-          if(piece1y==250){
-            P1 = p1;
-            Piece.css("left", p1 + "px");
-          }
-          if(piece2y==250){
-            P2 = p2;
-            Piece.css("left", p2 + "px");
-          }
-          if(piece3y==250){
-            P3 = p3;
-            Piece.css("left", p3 + "px");
-          }
-          if(piece4y==250){
-            P4 = p4;
-            Piece.css("left", p4 + "px");
-          }
-          if(piece5y==250){
-            P5 = p5;
-            Piece.css("left", p5 + "px");
-          }
-          if(piece6y==250){
-            P6 = p6;
-            Piece.css("left", p6 + "px");
-          }       
-      }
-      else{
-          if(piece1y==250){
-            P1 = Math.round(Math.round((SUM1 + p1) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P1 + "px");         
-          }
-          if(piece2y==250){
-            P2 = Math.round(Math.round((SUM2 + p2) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P2 + "px");         
-          }
-          if(piece3y==250){
-            P3 = Math.round(Math.round((SUM3 + p3) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P3 + "px");         
-          }
-          if(piece4y==250){
-            P4 = Math.round(Math.round((SUM4 + p4) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P4 + "px");         
-          }
-          if(piece5y==250){
-            P5 = Math.round(Math.round((SUM5 + p5) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P5 + "px");         
-          }
-          if(piece6y==250){
-            P6 = Math.round(Math.round((SUM1 + p6) / (playnum + 1)) / 50) * 50;
-            Piece.css("left", P6 + "px");         
-          }       
-      }   
-    }
-    else{
-        if(piece1y==250){
-        Piece.css("left", P1 + "px");       
-        }    
-        if(piece2y==250){
-          Piece.css("left", P2 + "px");       
-        } 
-        if(piece3y==250){
-          Piece.css("left", P3 + "px");       
-        }       
-        if(piece4y==250){
-          Piece.css("left", P4 + "px");       
-        }
-        if(piece5y==250){
-          Piece.css("left", P5 + "px");       
-        }
-        if(piece6y==250){
-          Piece.css("left", P6 + "px");       
-        }   
-    }
-      loop_id++;
-      if(notcollision() == false){
-        updateboard0();
-        clearInterval(si);
-        alert("Game Over!");
-      }
+            console.log("playnum: " + playnum);
     isoutofbound();
+    loop_id++;
+      time1 = (3600*end.getHours())+(60*end.getMinutes())+end.getSeconds() - begin.getSeconds()-(begin.getMinutes()*60)-(3600*begin.getHours());    
+      document.all.show.innerHTML = "Time Duration: "+time1+"s";
   }, 1000); 
 
 })
@@ -440,7 +530,9 @@ $(document).ready(function(){
   position: relative;
 }
 .piece {
-  background-color: red;
+  background-color: transparent;
+  background-image: url("spaceship.png");
+  background-size: contain;
   width: 50px;
   height: 50px;
   position: absolute;
@@ -448,7 +540,9 @@ $(document).ready(function(){
   top: 250px;
 }
 .Piece {
-  background-color: purple;
+  background-color: transparent;
+  background-image: url("rocket.png");
+  background-size: contain;
   width: 50px;
   height: 50px;
   position: absolute;
@@ -510,6 +604,7 @@ $(document).ready(function(){
 }
 </style>
 <body>
+<label id="show"> </label>
 </body>
 </head>
 </html>
