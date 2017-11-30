@@ -1,162 +1,459 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<title>Avoid Block Game</title>
+<title>Multi-player Avoid Block Game</title>
 <p>
-<strong>Instructions: </strong><font color = blue>Use Left and Right Arrow Keys to control the purple block and try to avoid the dropping blue bocks. Have Fun!<br> Buff Mode: key "1" and key "2", figure out the function by yourself</font>
+<strong>Instructions: </strong><font color = blue>Use Left and Right Arrow Keys to control the purple block and try to avoid the dropping blue bocks. Have Fun!</font>
 </p>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="mturk.js"></script>
 <script>
+var loop_id = 0;
+var is_active = false;
+var p1;
+var p2;
+var p3;
+var p4;
+var p5;
+var p6;                              // position of piece
+var P1;
+var P2;
+var P3;
+var P4;
+var P5;
+var P6;                              // position of mean
+var SUM1;
+var SUM2;
+var SUM3;
+var SUM4;
+var SUM5;
+var SUM6;
+
 var piecex = 0;
-var piecey = 450;
-var piecex1 = 0;
-var piecey1 = 0;
-var piecex2 = 150;
-var piecey2 = 0;
-var piecex3 = 250;
-var piecey3 = 0;
-var begin = new Date();
-var mask = false;
-var time1;
-var oDiv;
-var money;
-var buff1begin;
-var buff2begin;
-var gg = 1;
-function notcollision(piecex,piecex1,piecex2,piecex3,piecey,piecey1,piecey2,piecey3){
-   if(mask == true){
+var piecey = 250;
+var piece1y = -50;
+var piece2y = -100;
+var piece3y = -150;
+var piece4y = -200;
+var piece5y = -250;
+var piece6y = -300;
+var playnum = 0;
+
+  function isoutofbound(){
+    if(piece1y < 0){
+      $(".piece1").css("background-color", 'transparent');
+    }
+    else{
+      $(".piece1").css("background-color", 'blue');     
+    }
+    if(piece2y < 0){
+      $(".piece2").css("background-color", 'transparent');
+    }
+    else{
+      $(".piece2").css("background-color", 'blue');     
+    }
+    if(piece3y < 0){
+      $(".piece3").css("background-color", 'transparent');
+    }
+    else{
+      $(".piece3").css("background-color", 'blue');     
+    }   
+    if(piece4y < 0){
+      $(".piece4").css("background-color", 'transparent');
+    }
+    else{
+      $(".piece4").css("background-color", 'blue');     
+    }
+    if(piece5y < 0){
+      $(".piece5").css("background-color", 'transparent');
+    }
+    else{
+      $(".piece5").css("background-color", 'blue');     
+    }
+    if(piece6y < 0){
+      $(".piece6").css("background-color", 'transparent');
+    }     
+    else{
+      $(".piece6").css("background-color", 'blue');     
+    }     
+  }
+
+
+  function updateboard0(){
+    var tmpOBJ = {};
+      tmpOBJ["pos1"] = 0;
+      tmpOBJ["pos2"] = 0;
+      tmpOBJ["pos3"] = 0;
+      tmpOBJ["pos4"] = 0;
+      tmpOBJ["pos5"] = 0;
+      tmpOBJ["pos6"] = 0;
+      tmpOBJ["is_active"] = false;
+      $.ajax({
+          url:"https://codingthecrowd.com/counter.php",
+          dataType: "jsonp", 
+          data: {key: "weiqi", data: JSON.stringify(tmpOBJ)},
+      })
+     .done(function(data) {
+         console.log(data);
+         var allinputs = data["results"];
+         var num = data["count"]; 
+         SUM1 = 0;
+         SUM2 = 0;
+         SUM3 = 0;
+         SUM4 = 0;
+         SUM5 = 0;
+         SUM6 = 0;
+         playnum = 0;
+         for(var i=0; i<num ; i++){
+            if(JSON.parse(allinputs[i]["data"]).is_active == true){
+               SUM1 += JSON.parse(allinputs[i]["data"]).pos1;
+               SUM2 += JSON.parse(allinputs[i]["data"]).pos2;
+               SUM3 += JSON.parse(allinputs[i]["data"]).pos3;
+               SUM4 += JSON.parse(allinputs[i]["data"]).pos4;
+               SUM5 += JSON.parse(allinputs[i]["data"]).pos5;
+               SUM6 += JSON.parse(allinputs[i]["data"]).pos6;
+               playnum++;           
+            }                                    
+         }
+      })     
+     .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+      })
+  }
+
+
+  function updateboard(){
+    var tmpOBJ = {};
+      tmpOBJ["pos1"] = p1;
+      tmpOBJ["pos2"] = p2;
+      tmpOBJ["pos3"] = p3;
+      tmpOBJ["pos4"] = p4;
+      tmpOBJ["pos5"] = p5;
+      tmpOBJ["pos6"] = p6;
+      tmpOBJ["is_active"] = is_active;
+      $.ajax({
+          url:"https://codingthecrowd.com/counter.php",
+          dataType: "jsonp", 
+          data: {key: "weiqi", data: JSON.stringify(tmpOBJ)},
+      })
+     .done(function(data) {
+         console.log(data);
+         var allinputs = data["results"];
+         var num = data["count"]; 
+         SUM1 = 0;
+         SUM2 = 0;
+         SUM3 = 0;
+         SUM4 = 0;
+         SUM5 = 0;
+         SUM6 = 0;
+         playnum = 0;
+         for(var i=0; i<num ; i++){
+            if(JSON.parse(allinputs[i]["data"]).is_active == true){
+               SUM1 += JSON.parse(allinputs[i]["data"]).pos1;
+               SUM2 += JSON.parse(allinputs[i]["data"]).pos2;
+               SUM3 += JSON.parse(allinputs[i]["data"]).pos3;
+               SUM4 += JSON.parse(allinputs[i]["data"]).pos4;
+               SUM5 += JSON.parse(allinputs[i]["data"]).pos5;
+               SUM6 += JSON.parse(allinputs[i]["data"]).pos6;
+               playnum++;           
+            }                                    
+         }
+         if(playnum > 0){
+           P1 = Math.round(Math.round(SUM1/playnum) / 50) * 50;
+           P2 = Math.round(Math.round(SUM2/playnum) / 50) * 50;        
+           P3 = Math.round(Math.round(SUM3/playnum) / 50) * 50;
+           P4 = Math.round(Math.round(SUM4/playnum) / 50) * 50;
+         P5 = Math.round(Math.round(SUM5/playnum) / 50) * 50;   
+           P6 = Math.round(Math.round(SUM6/playnum) / 50) * 50;
+         }
+
+      })     
+     .fail(function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+      })
+  }
+
+  function notcollision(){
+    if(piece1y==250){
+      if((P1==0) || (P1==100)){
+        return false;
+      }
+    }
+    if(piece2y==250){
+      if((P2==0) || (P2==150) || (P2==250)){
+        return false;
+      }     
+    }
+    if(piece3y==250){
+      if(P3==50){
+        return false;
+      }     
+    }
+    if(piece4y==250){
+      if((P4==0) || (P4==50) || (P4==200)){
+        return false;
+      }     
+    }
+    if(piece5y==250){
+      if(P5==200){
+        return false;
+      }     
+    }
+    if(piece6y==250){
+      if((P4==0) || (P4==100) || (P4==200)){
+        return false;
+      }       
+    }
     return true;
-   }
-   if((Math.abs(piecex-piecex1) < 50) && (Math.abs(piecey-piecey1)< 50)){
-    return false;
-   }
-   if((Math.abs(piecex-piecex2) < 50) && (Math.abs(piecey-piecey2)< 50)){
-    return false;
-   }
-   if((Math.abs(piecex-piecex3) < 50) && (Math.abs(piecey-piecey3)< 50)){
-    return false;
-   }
-   return true;
-}
-$(document).ready(function() {
+  }
+
+$(document).ready(function(){
   var gameboard = $("<div id='gameboard'></div>");
   $(document.body).append(gameboard);
   var piece = $("<div class='piece'></div>");
+  var Piece = $("<div class='piece'></div>");  
   $(gameboard).append(piece);
-  var piece1 = $("<div class='piece1'></div>");
-  var piece2 = $("<div class='piece2'></div>");
-  var piece3 = $("<div class='piece3'></div>");
-  $(gameboard).append(piece1);
-  $(gameboard).append(piece2);
-  $(gameboard).append(piece3);
-  $(document).keydown(function(e) {
-    if(e.keyCode==37) {
-      // left arrow clicked
-      piecex -= 25;
-    } else if(e.keyCode == 39) {
-      // right arrow clicked
-      piecex += 25;
-    }
-    else if(e.keyCode == 49){
-      mask = true;
-      buff1begin = new Date();
-      $(".piece").css("background-color", 'yellow');
-      console.log(buff1begin+"buffbegin");
-    }
-    else if(e.keyCode == 50){
-      buff2begin = new Date();
-      gg = 0;
-      $(".piece1").css("background-color", 'silver');
-      $(".piece2").css("background-color", 'silver');
-      $(".piece3").css("background-color", 'silver');
-    }
-    if(piecex > 250){
-      piecex = 0;
-    }
-    if(piecex < 0){
-      piecex = 250;
-    }
-    $(".piece").css("left", piecex + "px");
-  });
+  $(gameboard).append(Piece);
+  piece.css("background-color", "purple");
+  Piece.css("background-color", "red");
+  var piece11 = $("<div class='piece1'></div>");
+  var piece13 = $("<div class='piece1'></div>");
+  var piece21 = $("<div class='piece2'></div>");
+  var piece24 = $("<div class='piece2'></div>");
+  var piece26 = $("<div class='piece2'></div>");
+  var piece32 = $("<div class='piece3'></div>");
+  var piece41 = $("<div class='piece4'></div>");
+  var piece42 = $("<div class='piece4'></div>");
+  var piece45 = $("<div class='piece4'></div>");
+  var piece55 = $("<div class='piece5'></div>");
+  var piece61 = $("<div class='piece6'></div>");
+  var piece63 = $("<div class='piece6'></div>");
+  var piece65 = $("<div class='piece6'></div>");
+  $(gameboard).append(piece11);
+  $(gameboard).append(piece13);
+  $(gameboard).append(piece21);
+  $(gameboard).append(piece24);  
+  $(gameboard).append(piece26);  
+  $(gameboard).append(piece32);
+  $(gameboard).append(piece41);
+  $(gameboard).append(piece42);
+  $(gameboard).append(piece45);
+  $(gameboard).append(piece55);
+  $(gameboard).append(piece61);
+  $(gameboard).append(piece63);
+  $(gameboard).append(piece65); 
+  piece11.css("left", 0 + "px");
+  piece13.css("left", 100 + "px");
+  piece21.css("left", 0 + "px");
+  piece24.css("left", 150 + "px");
+  piece26.css("left", 250 + "px");
+  piece32.css("left", 50 + "px");
+  piece41.css("left", 0 + "px");
+  piece42.css("left", 50 + "px");
+  piece45.css("left", 200 + "px");
+  piece55.css("left", 200 + "px");
+  piece61.css("left", 0 + "px");
+  piece63.css("left", 100 + "px");
+  piece65.css("left", 200 + "px");
+
+    $(document).keydown(function(e) {
+      if(e.keyCode==37) {
+        // left arrow clicked
+        piecex -= 50;
+      } else if(e.keyCode == 39) {
+        // right arrow clicked
+        piecex += 50;
+      }
+      if(piecex > 250){
+        piecex = 0;
+      }
+      if(piecex < 0){
+        piecex = 250;
+      }
+      piece.css("left", piecex + "px");
+    });   
+
   var si = setInterval(function() {
-    var end = new Date();
- //   console.log(end+"end");
-    var time = end - begin;
-    piecey1 += (1 + Math.floor(Math.random()*8)) * gg;
-    var g = 2 + time / 1000;
-    if(g < 8){
-      piecey2 += (g * gg);
+    isoutofbound();
+    piece1y += 50;
+    piece2y += 50;
+    piece3y += 50;
+    piece4y += 50;
+    piece5y += 50;
+    piece6y += 50;
+    if(piece1y > 251){
+        piece1y = 0;
+      }
+    if(piece2y > 251){
+        piece2y = 0;
+      }
+    if(piece2y > 251){
+        piece2y = 0;
+      }
+    if(piece3y > 251){
+        piece3y = 0;
+      }
+    if(piece4y > 251){
+        piece4y = 0;
+      }
+    if(piece5y > 251){
+        piece5y = 0;
+      }
+    if(piece6y > 251){
+        piece6y = 0;
+      }
+    $(".piece1").css("top", piece1y + "px");
+      $(".piece2").css("top", piece2y + "px");
+      $(".piece3").css("top", piece3y + "px");
+      $(".piece4").css("top", piece4y + "px");
+      $(".piece5").css("top", piece5y + "px");
+      $(".piece6").css("top", piece6y + "px");
+      if(piece1y==250){
+        p1 = piecex;
+      }
+      if(piece2y==250){
+        p2 = piecex;
+      }     
+      if(piece3y==250){
+        p3 = piecex;
+      }
+      if(piece4y==250){
+        p4 = piecex;
+      }
+      if(piece5y==250){
+        p5 = piecex;
+      }
+      if(piece6y==250){
+        p6 = piecex;
+      }
+      if(loop_id >= 10){
+        is_active = true;
+      }
+      if((loop_id >= 5) && (loop_id < 10)){
+        updateboard0();
+      }
+      if(loop_id >= 10){
+        updateboard();
+      }
+
+      if(loop_id<=4){
+        P1 = piecex;
+        P2 = piecex;
+        P3 = piecex;
+        P4 = piecex;
+        P5 = piecex;
+        P6 = piecex;
+      Piece.css("left",piecex + "px");
+    }
+    else if(loop_id<10){
+      console.log("playnum: " + playnum);
+      if(playnum==0){
+          if(piece1y==250){
+            P1 = p1;
+            Piece.css("left", p1 + "px");
+          }
+          if(piece2y==250){
+            P2 = p2;
+            Piece.css("left", p2 + "px");
+          }
+          if(piece3y==250){
+            P3 = p3;
+            Piece.css("left", p3 + "px");
+          }
+          if(piece4y==250){
+            P4 = p4;
+            Piece.css("left", p4 + "px");
+          }
+          if(piece5y==250){
+            P5 = p5;
+            Piece.css("left", p5 + "px");
+          }
+          if(piece6y==250){
+            P6 = p6;
+            Piece.css("left", p6 + "px");
+          }       
+      }
+      else{
+          if(piece1y==250){
+            P1 = Math.round(Math.round((SUM1 + p1) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P1 + "px");         
+          }
+          if(piece2y==250){
+            P2 = Math.round(Math.round((SUM2 + p2) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P2 + "px");         
+          }
+          if(piece3y==250){
+            P3 = Math.round(Math.round((SUM3 + p3) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P3 + "px");         
+          }
+          if(piece4y==250){
+            P4 = Math.round(Math.round((SUM4 + p4) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P4 + "px");         
+          }
+          if(piece5y==250){
+            P5 = Math.round(Math.round((SUM5 + p5) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P5 + "px");         
+          }
+          if(piece6y==250){
+            P6 = Math.round(Math.round((SUM1 + p6) / (playnum + 1)) / 50) * 50;
+            Piece.css("left", P6 + "px");         
+          }       
+      }   
     }
     else{
-      piecey2 += (8 * gg);
+        if(piece1y==250){
+        Piece.css("left", P1 + "px");       
+        }    
+        if(piece2y==250){
+          Piece.css("left", P2 + "px");       
+        } 
+        if(piece3y==250){
+          Piece.css("left", P3 + "px");       
+        }       
+        if(piece4y==250){
+          Piece.css("left", P4 + "px");       
+        }
+        if(piece5y==250){
+          Piece.css("left", P5 + "px");       
+        }
+        if(piece6y==250){
+          Piece.css("left", P6 + "px");       
+        }   
     }
-    piecey3 += (5 * gg);
-    if(piecey1 > 450){
-      piecey1 = 0;
-      piecex1 = Math.floor(Math.random()*250); 
-    }
-    if(piecey2 > 450){
-      piecey2 = 0;
-      piecex2 = Math.floor(Math.random()*250); 
-    }
-    if(piecey3 > 450){
-      piecey3 = 0;
-      piecex3 = Math.floor(Math.random()*250); 
-    }
-    $(".piece1").css("top", piecey1 + "px");
-    $(".piece2").css("top", piecey2 + "px");
-    $(".piece3").css("top", piecey3 + "px");
-    $(".piece1").css("left", piecex1 + "px");
-    $(".piece2").css("left", piecex2 + "px");
-    $(".piece3").css("left", piecex3 + "px");
-    if(notcollision(piecex,piecex1,piecex2,piecex3,piecey,piecey1,piecey2,piecey3) == false){
+      loop_id++;
+      if(notcollision() == false){
+        updateboard0();
         clearInterval(si);
-        alert("Game Over! You've earned $"+money);
-    }
-    time1 = (3600*end.getHours())+(60*end.getMinutes())+end.getSeconds() - begin.getSeconds()-(begin.getMinutes()*60)-(3600*begin.getHours());
-    money = (time1 * 0.01).toFixed(2);
-    document.all.show.innerHTML = "Time Duration: "+time1+"s"+"  "+"$"+money+"  earned";
-    if(money >= 2){
-      clearInterval(si);
-      alert("Well Down! Your've Earned $2");
-    }
-    if(mask==true){
-    	var duration1 = end.getSeconds() - buff1begin.getSeconds();
-        if(duration1 > 3){
-      		mask = false;
-      		console.log(mask+"mask");
-      		$(".piece").css("background-color", '#AAF');
-    	}
-    }
-    if(gg==0){
-    	var duration2 = end.getSeconds() - buff2begin.getSeconds();
-    	if(duration2 > 3){
-      		gg = 1;
-      		$(".piece1").css("background-color", 'blue');
-      		$(".piece2").css("background-color", 'blue');
-      		$(".piece3").css("background-color", 'blue');
-    	}
-    }
-    // console.log(duration2+"duration");
+        alert("Game Over!");
+      }
+    isoutofbound();
+  }, 1000); 
 
-  }, 20);
 })
-
 </script>
 <style>
 #gameboard {
   background-color: gray;
   width: 300px;
-  height: 500px;
+  height: 300px;
   position: relative;
 }
 .piece {
-  background-color: #AAF;
+  background-color: red;
   width: 50px;
   height: 50px;
   position: absolute;
   left: 0px;
-  top: 450px;
+  top: 250px;
+}
+.Piece {
+  background-color: purple;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 250px;
 }
 .piece1 {
   background-color: blue;
@@ -172,7 +469,7 @@ $(document).ready(function() {
   width: 50px;
   height: 50px;
   position: absolute;
-  left: 150px;
+  left: 0px;
   top: 0px;
 }
 
@@ -181,13 +478,38 @@ $(document).ready(function() {
   width: 50px;
   height: 50px;
   position: absolute;
-  left: 250px;
+  left: 0px;
   top: 0px;
 }
+
+.piece4 {
+  background-color: blue;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.piece5 {
+  background-color: blue;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.piece6 {
+  background-color: blue;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 </style>
-</head>
 <body>
-<label id="show"> </label>
-</body> 
+</body>
+</head>
 </html>
