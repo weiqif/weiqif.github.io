@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ATP Top 50 Players Serve Data Visualization in 2016</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+				height: 100%;
+			}
+
+			body {
+				background-color: #000000;
+				margin: 0;
+				font-family: Helvetica, sans-serif;;
+				overflow: hidden;
+			}
+
+			a {
+				color: #ffffff;
+			}
+
+			#info {
+				position: absolute;
+				width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				font-weight: bold;
+				text-align: center;
+				z-index: 1;
+			}
+
+			#menu {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
+			}
+
+			#index {
+  				margin: 0 auto;
+  				position: relative;
+			}
+
+			#content {
+ 				position: absolute;
+				float: left;
+				left:50px;
+				bottom: 0px;
+				width: 350px;				
+				height: 500px;
+				border: 1px solid rgba(127,255,255,0.25);
+				color: rgba(127,255,255,0.75);
+				padding: 20px;
+			}
+			#container {
+				
+  				height: 100%;
+  				margin-left: 450px;
+  				position: relative;
+			}
+
+			#Prof {
+
+				font-size: 20px;
+				color: rgba(127,255,255,0.75);
+
+			}
+
+			#ProfInfo {
+
+				font-size: 13px;
+				color: rgba(127,255,255,0.5);
+
+			}
+
+			.element {
+				width: 120px;
+				height: 160px;
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+				border: 0px solid rgba(127,255,255,0.25);
+				text-align: center;
+				cursor: default;
+			}
+
+			.element:hover {
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+				border: 0px solid rgba(127,255,255,0.75);
+			}
+
+			.initial {
+				background-color:transparent;
+
+
+				border: 1px solid rgba(127,255,255,0.25);
+
+			}
+
+			.initial:hover {
+
+				background-color: rgba(255,54,25,1);
+				border: 1px solid rgba(188,143,43,0.25);
+			}
+
+			.highlight {
+
+				background-color: rgba(255,54,25,1);
+
+				border: 1px solid rgba(188,143,43,0.25);
+			}
+
+			.bright {
+				border: 3px solid rgba(255,255,255,1);
+			}
+
+				.element .number {
+					position: absolute;
+					top: 20px;
+					right: 20px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
+				}
+
+				.element .symbol {
+					position: absolute;
+					top: 40px;
+					left: 0px;
+					right: 0px;
+					font-size: 60px;
+					font-weight: bold;
+					color: rgba(255,255,255,0.75);
+					text-shadow: 0 0 10px rgba(0,255,255,0.95);
+				}
+
+				.element .details {
+					position: absolute;
+					bottom: 15px;
+					left: 0px;
+					right: 0px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
+				}
+
+
+			.btn {
+				color: rgba(127,255,255,0.75);
+				background: transparent;
+				outline: 1px solid rgba(127,255,255,0.75);
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			.btn:hover{
+				background-color: rgba(0,255,255,0.5);
+			}
+			.btn:active{
+				color: #000000;
+				background-color: rgba(0,255,255,0.75);
+			}
+		</style>
+	</head>
+	<body>
+		<script src="build/three.js"></script>
+		<script src="js/libs/tween.min.js"></script>
+		<script src="js/controls/TrackballControls.js"></script>
+		<script src="js/renderers/CSS3DRenderer.js"></script>
+		<script src="build/d3.js"></script>
+        <script src="build/d3.tip.js"></script>
+        <script src="js/jquery-2.1.4.min.js"></script>
+        <script src="relationship.js"></script>
+
+		<div id="info">CMU Academy Relation Network - Social Web Project</div>
+
+
+		<div id = "index">
+
+		<div id="content">
+			<div id="Prof"> <p>Select a Professor.</p>
+            </div>
+			<div id="ProfInfo">
+            </div>            
+        </div>
+		<div id="container"></div>
+
+		</div>
+		<div id="menu">
+			<button class ="btn" id="table">TABLE</button>
+			<button class ="btn active" id="sphere">SPHERE</button>
+			<button class ="btn" id="helix">HELIX</button>
+			<button class ="btn" id="grid">GRID</button>
+		</div>
+
+		<script>
+			var table = new Array(119);
+			items_relation = [];
+			items_de = [0,0];
+			var jl = 0;
+			var zl = 0;
+
+			d3.csv("csv/test___.csv", function(error, data) {
+				table=data;
+				visualizing();
+
+				var items=document.getElementsByClassName("initial");
+				for (var i=0, l = items.length; i<l; i++){
+						items[i].onclick=function (event) {
+							relation(this.value, items);
+							profinfo(this.value);
+						};
+
+				}
+
+				var gg = [];
+				gg = find_related(18, table);
+				console.log(gg[0]);
+				console.log(gg[1]);
+			});
+			//table.length=118;
+
+			function relation(i, items){
+				for (var j=0; j<jl; j+=2){
+					items[items_relation[j]].classList.remove("highlight");
+				}
+				items_relation=[];
+				items_relation=find_related(i, table);
+
+				items[i].className += " highlight";
+				jl = items_relation.length;
+				for (var j=0; j<jl; j+=2){
+					items[items_relation[j]].className += " highlight";
+				}
+
+				for (var z=items_de[0]; z<=items_de[1]; z++){
+					items[z].classList.remove("bright");
+				}
+				items_de=department_range(i);
+				for (var z=items_de[0]; z<=items_de[1]; z++){
+					items[z].className += " bright";
+				}
+
+			}
+
+			function profinfo(i) {
+				$("#Prof").html(table[i].B);
+				var html = "<img src='"+table[i].A+"' alt='na' width='120px' class='symbol'>"
+					+"</br></br>Departments: </br>"+table[i].D1+"</br>"+table[i].D2+ "</br>"+table[i].D3
+					+"</br></br> Research Fields: </br>"+table[i].R1+"</br>"+table[i].R2+ "</br>"+table[i].R3+"</br>"+table[i].R4+ "</br>"+table[i].R5
+					+"</br></br> <a href ='" + table[i].Homepage+ "'> Homepage </a>"
+					+"</br></br> <a href ='" + table[i].Publications+"'> Publications </a>"
+				$("#ProfInfo").html(html);
+			}
+
+			function visualizing(){
+				var camera, scene, renderer;
+				var controls;
+
+				var objects = [];
+				var targets = { table: [], sphere: [], helix: [], grid: [] };
+
+				init();
+				animate();
+
+				function init() {
+
+					camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+					camera.position.z = 4000;
+
+					scene = new THREE.Scene();
+
+					// table
+
+					for ( var i = 0; i < 119; i ++ ) {
+						var div = document.createElement( 'div' );
+
+						var button = document.createElement( 'button');
+						button.className = 'initial';
+						button.value = i;
+						//button.setAttribut]e("id", "btn"+i);
+						div.appendChild( button );
+
+						var element = document.createElement( 'div' );
+						element.className = 'element';
+						element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 ) + ')';
+						button.appendChild( element );
+
+
+
+						var number = document.createElement( 'div' );
+						number.className = 'number';
+						number.textContent = table[i].B;
+						element.appendChild( number );
+
+						var symbol = document.createElement( 'img' );
+						symbol.setAttribute('src', table[i].A);
+            symbol.setAttribute('alt', 'na');
+          //  symbol.setAttribute('height', '120px');
+            symbol.setAttribute('width', '80px');
+						symbol.className = 'symbol';
+						document.body.appendChild(symbol);
+						//symbol.textContent = table[ i ].A;
+						element.appendChild( symbol );
+
+						var details = document.createElement( 'div' );
+						details.className = 'details';
+						details.innerHTML = table[ i ].B + '<br>' + table[ i ].C;
+						element.appendChild( details );
+
+						var object = new THREE.CSS3DObject( div );
+						object.position.x = Math.random() * 4000 - 2000;
+						object.position.y = Math.random() * 4000 - 2000;
+						object.position.z = Math.random() * 4000 - 2000;
+						scene.add( object );
+
+						objects.push( object );
+
+						//
+
+						var object = new THREE.Object3D();
+						object.position.x = ( table[ i ].D * 140 ) - 1330;
+						object.position.y = - ( table[ i ].E * 180 ) + 990;
+
+						targets.table.push( object );
+
+
+					}
+
+
+					// sphere
+
+					var vector = new THREE.Vector3();
+					var spherical = new THREE.Spherical();
+
+					for ( var i = 0, l = objects.length; i < l; i ++ ) {
+
+						var phi = Math.acos( -1 + ( 2 * i ) / l );
+						var theta = Math.sqrt( l * Math.PI ) * phi;
+
+						var object = new THREE.Object3D();
+
+						spherical.set( 800, phi, theta );
+
+						object.position.setFromSpherical( spherical );
+
+						vector.copy( object.position ).multiplyScalar( 2 );
+
+						object.lookAt( vector );
+
+						targets.sphere.push( object );
+
+					}
+
+					// helix
+
+					var vector = new THREE.Vector3();
+					var cylindrical = new THREE.Cylindrical();
+
+					for ( var i = 0, l = objects.length; i < l; i ++ ) {
+
+						var theta = i * 0.175 + Math.PI;
+						var y = - ( i * 8 ) + 450;
+
+						var object = new THREE.Object3D();
+
+						cylindrical.set( 900, theta, y );
+
+						object.position.setFromCylindrical( cylindrical );
+
+						vector.x = object.position.x * 2;
+						vector.y = object.position.y;
+						vector.z = object.position.z * 2;
+
+						object.lookAt( vector );
+
+						targets.helix.push( object );
+
+					}
+
+					// grid
+
+					for ( var i = 0; i < objects.length; i ++ ) {
+
+						var object = new THREE.Object3D();
+
+						object.position.x = ( ( i % 5 ) * 400 ) - 800;
+						object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
+						object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
+
+						targets.grid.push( object );
+
+					}
+
+
+					//
+
+					renderer = new THREE.CSS3DRenderer();
+					renderer.setSize( window.innerWidth -500, window.innerHeight - 100 );
+					document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+					//
+
+					controls = new THREE.TrackballControls( camera, renderer.domElement );
+					controls.rotateSpeed = 0.5;
+					controls.minDistance = 500;
+					controls.maxDistance = 6000;
+					controls.addEventListener( 'change', render );
+
+					var button = document.getElementById( 'table' );
+					button.addEventListener( 'click', function ( event ) {
+
+						transform( targets.table, 2000 );
+
+					}, false );
+
+					var button = document.getElementById( 'sphere' );
+					button.addEventListener( 'click', function ( event ) {
+
+						transform( targets.sphere, 2000 );
+
+					}, false );
+
+					var button = document.getElementById( 'helix' );
+					button.addEventListener( 'click', function ( event ) {
+
+						transform( targets.helix, 2000 );
+
+					}, false );
+
+					var button = document.getElementById( 'grid' );
+					button.addEventListener( 'click', function ( event ) {
+
+						transform( targets.grid, 2000 );
+
+					}, false );
+
+					transform( targets.table, 2000 );
+
+					//
+
+
+					window.addEventListener( 'resize', onWindowResize, false );
+
+				}
+
+
+				function transform( targets, duration ) {
+
+					TWEEN.removeAll();
+
+					for ( var i = 0; i < objects.length; i ++ ) {
+
+						var object = objects[ i ];
+						var target = targets[ i ];
+
+						new TWEEN.Tween( object.position )
+							.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+							.easing( TWEEN.Easing.Exponential.InOut )
+							.start();
+
+						new TWEEN.Tween( object.rotation )
+							.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+							.easing( TWEEN.Easing.Exponential.InOut )
+							.start();
+
+					}
+
+					new TWEEN.Tween( this )
+						.to( {}, duration * 2 )
+						.onUpdate( render )
+						.start();
+
+				}
+
+				function onWindowResize() {
+
+					camera.aspect = window.innerWidth / window.innerHeight;
+					camera.updateProjectionMatrix();
+
+					renderer.setSize( window.innerWidth - 500, window.innerHeight - 100);
+
+					render();
+
+				}
+
+				function animate() {
+
+					requestAnimationFrame( animate );
+
+					TWEEN.update();
+
+					controls.update();
+
+				}
+
+				function render() {
+
+					renderer.render( scene, camera );
+
+				}
+
+			}
+
+		</script>
+	</body>
+</html>
