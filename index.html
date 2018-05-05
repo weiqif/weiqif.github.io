@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CMU Academy Relation Network</title>
+		<title>Serve Data of Top 50 ATP Tennis Players in 2016</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -50,7 +50,7 @@
 				left:50px;
 				bottom: 0px;
 				width: 350px;				
-				height: 500px;
+				height: 600px;
 				border: 1px solid rgba(127,255,255,0.25);
 				color: rgba(127,255,255,0.75);
 				padding: 20px;
@@ -170,14 +170,13 @@
         <script src="build/d3.tip.js"></script>
         <script src="js/jquery-2.1.4.min.js"></script>
         <script src="relationship.js"></script>
-
-		<div id="info">CMU Academy Relation Network - Social Web Project</div>
+		<div id="info">Serve Data of ATP Top 50 Players in 2016<br>Name: Weiqi Fang, Andrew ID: weiqif</div>
 
 
 		<div id = "index">
 
 		<div id="content">
-			<div id="Prof"> <p>Select a Professor.</p>
+			<div id="Prof"> <p>Select a Player. Ordered by rank</p>
             </div>
 			<div id="ProfInfo">
             </div>            
@@ -193,29 +192,24 @@
 		</div>
 
 		<script>
-			var table = new Array(119);
+			var table = new Array(50);
 			items_relation = [];
 			items_de = [0,0];
 			var jl = 0;
 			var zl = 0;
 
-			d3.csv("csv/test___.csv", function(error, data) {
+			d3.csv("csv/2016final.csv", function(error, data) {
 				table=data;
 				visualizing();
 
 				var items=document.getElementsByClassName("initial");
 				for (var i=0, l = items.length; i<l; i++){
 						items[i].onclick=function (event) {
-							relation(this.value, items);
+//							relation(this.value, items);
 							profinfo(this.value);
 						};
 
 				}
-
-				var gg = [];
-				gg = find_related(18, table);
-				console.log(gg[0]);
-				console.log(gg[1]);
 			});
 			//table.length=118;
 
@@ -243,13 +237,12 @@
 			}
 
 			function profinfo(i) {
-				$("#Prof").html(table[i].B);
-				var html = "<img src='"+table[i].A+"' alt='na' width='120px' class='symbol'>"
-					+"</br></br>Departments: </br>"+table[i].D1+"</br>"+table[i].D2+ "</br>"+table[i].D3
-					+"</br></br> Research Fields: </br>"+table[i].R1+"</br>"+table[i].R2+ "</br>"+table[i].R3+"</br>"+table[i].R4+ "</br>"+table[i].R5
-					+"</br></br> <a href ='" + table[i].Homepage+ "'> Homepage </a>"
-					+"</br></br> <a href ='" + table[i].Publications+"'> Publications </a>"
-				$("#ProfInfo").html(html);
+				$("#Prof").html(table[i].Rk);
+				var html1 = "Winning Rate: " + "table[i].GameWin" + "</br>" + table[i].Player + "</br>" + "<img src='"+table[i].ImgLink+"' alt='na' height='140px' class='symbol'>" + "</br>" + "player serve stats:</br>" + "<img src='"+table[i].ImgData+"' alt='na' width='240px' class='symbol'>" + "</br>average serve stats</br>" + "<img src='"+"average.PNG"+"' alt='na' width='240px' class='symbol'>"
+//					+"</br></br> Research Fields: </br>"+table[i].R1+"</br>"+table[i].R2+ "</br>"+table[i].R3+"</br>"+table[i].R4+ "</br>"+table[i].R5
+//					+"</br></br> <a href ='" + table[i].Homepage+ "'> Homepage </a>"
+//					+"</br></br> <a href ='" + table[i].Publications+"'> Publications </a>"
+				$("#ProfInfo").html(html1);
 			}
 
 			function visualizing(){
@@ -271,7 +264,7 @@
 
 					// table
 
-					for ( var i = 0; i < 119; i ++ ) {
+					for ( var i = 0; i < 50; i ++ ) {
 						var div = document.createElement( 'div' );
 
 						var button = document.createElement( 'button');
@@ -289,11 +282,11 @@
 
 						var number = document.createElement( 'div' );
 						number.className = 'number';
-						number.textContent = table[i].B;
+						number.textContent = table[i].Player;
 						element.appendChild( number );
 
 						var symbol = document.createElement( 'img' );
-						symbol.setAttribute('src', table[i].A);
+						symbol.setAttribute('src', table[i].ImgLink);
             symbol.setAttribute('alt', 'na');
           //  symbol.setAttribute('height', '120px');
             symbol.setAttribute('width', '80px');
@@ -304,7 +297,7 @@
 
 						var details = document.createElement( 'div' );
 						details.className = 'details';
-						details.innerHTML = table[ i ].B + '<br>' + table[ i ].C;
+						details.innerHTML = table[ i ].Rk + '<br>' + table[ i ].Player;
 						element.appendChild( details );
 
 						var object = new THREE.CSS3DObject( div );
